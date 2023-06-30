@@ -48,28 +48,38 @@ ylimits <- c(0,0.7)
 all_pdat[all_pdat$Experiment == 'INV', ] %>%
   ggplot(aes(Stair, mean, fill = Condition)) +
     geom_bar(stat="identity", position = 'dodge', aes(fill = Condition)) +
-    ylim(ylimits) +
-    scale_fill_manual("Condition", values = c("Inverted" = "#cc0000", "Upright" = "#00c1d6")) +
+    scale_fill_manual("Condition", values = c("Inverted" = "#e85656", "Upright" = "#00c1d6")) +
     scale_x_discrete(limits=c("-6","-4","-2","+2","+4","+6")) +
     geom_errorbar(position = position_dodge(.9), aes(ymin = mean - se, ymax = mean + se), width=0.2) + 
-    labs(x = 'Location', y = 'Proportion of eccentricity', 
-         title = 'Inverted vs Normal letters') +
-    theme_bw() +
-    theme(text = element_text(size=20)) -> p1
+    labs(x = 'Target Eccentricity (degrees)', 
+         y = 'Crowding Threshold (proportion of eccentricity)', 
+         title = 'Inverted versus upright letters',
+         tag = 'a.') +
+    scale_y_continuous(limits = ylimits,expand = expansion(mult = c(0, .1))) +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5),
+          legend.position=c(.9,.9),
+          text = element_text(size=20)) -> p1
 
 all_pdat[all_pdat$Experiment == 'GAB', ] %>%
   ggplot(aes(Stair, mean, fill = Condition)) +
   geom_bar(stat="identity", position = 'dodge', aes(fill = Condition)) +
-  ylim(ylimits) +
-  scale_fill_manual("Condition", values = c("Gabor" = "#cc0000", "Upright" = "#00c1d6")) +
+  scale_fill_manual("Condition", values = c("Gabor" = "#f28149", "Upright" = "#00c1d6")) +
   scale_x_discrete(limits=c("-6","-4","-2","+2","+4","+6")) +
   geom_errorbar(position = position_dodge(.9), aes(ymin = mean - se, ymax = mean + se), width=0.2) + 
-  labs(x = 'Location', y = 'Proportion of eccentricity', 
-       title = 'Gabors vs Normal letters') +
-  theme_bw() +
-  theme(text = element_text(size=20)) -> p2
+  labs(x = 'Target Eccentricity (degrees)', 
+       y = 'Crowding Threshold (proportion of eccentricity)', 
+       title = 'Gabors versus upright letters',
+       tag = 'b.') +
+  scale_y_continuous(limits = ylimits, expand = expansion(mult = c(0, .1))) +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position=c(.9,.9),
+        text = element_text(size=20),
+        plot.margin = unit(c(0,0,0,1), "cm")) -> p2
 
 grid.arrange(p1, p2, nrow = 1)
+# exported at 1800 x 800
 
 ### Other plots
 
