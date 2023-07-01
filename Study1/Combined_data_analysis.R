@@ -45,21 +45,22 @@ all_pdat <- alldat %>%
 # plot
 ylimits <- c(0,0.7)
 
-all_pdat[all_pdat$Experiment == 'INV', ] %>%
-  ggplot(aes(Stair, mean, fill = Condition)) +
-    geom_bar(stat="identity", position = 'dodge', aes(fill = Condition)) +
-    scale_fill_manual("Condition", values = c("Inverted" = "#e85656", "Upright" = "#00c1d6")) +
-    scale_x_discrete(limits=c("-6","-4","-2","+2","+4","+6")) +
-    geom_errorbar(position = position_dodge(.9), aes(ymin = mean - se, ymax = mean + se), width=0.2) + 
-    labs(x = 'Target Eccentricity (degrees)', 
-         y = 'Crowding Threshold (proportion of eccentricity)', 
-         title = 'Inverted versus upright letters',
-         tag = 'a.') +
-    scale_y_continuous(limits = ylimits,expand = expansion(mult = c(0, .1))) +
-    theme_classic() +
-    theme(plot.title = element_text(hjust = 0.5),
-          legend.position=c(.9,.9),
-          text = element_text(size=20)) -> p1
+all_pdat[all_pdat$Experiment == 'INV', ] %>% # filter data and pipe
+  ggplot(aes(Stair, mean, fill = Condition)) + # x = stair (location), y = mean, fill = upright vs inverted
+    geom_bar(stat="identity", position = 'dodge', aes(fill = Condition)) + # make bar plot
+    scale_fill_manual("Condition", values = c("Inverted" = "#e85656", "Upright" = "#00c1d6")) + # manual color mapping
+    scale_x_discrete(limits=c("-6","-4","-2","+2","+4","+6")) + # manually set order of x axis
+    geom_errorbar(position = position_dodge(.9), aes(ymin = mean - se, ymax = mean + se), width=0.2) + # add error bars (se is a column in the data)
+    labs(x = 'Target Eccentricity (degrees)',  # x label
+         y = 'Crowding Threshold (proportion of eccentricity)', # y label
+         title = 'Inverted versus upright letters', # title
+         tag = 'a.') + # tag (the a.)
+    scale_y_continuous(limits = ylimits,expand = expansion(mult = c(0, .1))) + # set y limits (ylimits is an object of 2 values) and make bars touch bottom axis
+    theme_classic() + # blank background and no upper or right line 
+    theme(plot.title = element_text(hjust = 0.5), # center title
+          legend.position=c(.9,.9), # put condition legend into top right of plot
+          plot.tag = element_text(face = "bold"), # bold the "a." tag
+          text = element_text(size=20)) -> p1 # set font and assign to object
 
 all_pdat[all_pdat$Experiment == 'GAB', ] %>%
   ggplot(aes(Stair, mean, fill = Condition)) +
@@ -76,6 +77,7 @@ all_pdat[all_pdat$Experiment == 'GAB', ] %>%
   theme(plot.title = element_text(hjust = 0.5),
         legend.position=c(.9,.9),
         text = element_text(size=20),
+        plot.tag = element_text(face = "bold"),
         plot.margin = unit(c(0,0,0,1), "cm")) -> p2
 
 grid.arrange(p1, p2, nrow = 1)
