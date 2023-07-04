@@ -1,3 +1,7 @@
+# Plot and analysis code for study 2 of:
+#"Fundamental changes in the spatial properties of visual perception after a lifetime of reading crowded letters"
+# - Kurt Winsler
+
 ##### SET UP, LOAD DATA ####
 
 # packages
@@ -108,40 +112,50 @@ dat %>%
 fit <- lmer(Mean ~ HemifieldEff * EccentricityEff * Spelling_z
             + HemifieldEff * EccentricityEff * VWM_z 
             + HemifieldEff * EccentricityEff * ART_z
-            + (1 + EccentricityEff + HemifieldEff | SUBJECT)
+            + (1 | SUBJECT)
+            + (0 + EccentricityEff | SUBJECT)
+            + (0 + HemifieldEff | SUBJECT)
             , data = dat)
 summary(fit)
-Anova(fit, type = 3)
+anova(fit, type = 3)
 
 # Spelling only model (for supplemental figure)
 fit.spe <- lmer(Mean ~ HemifieldEff * EccentricityEff * Spelling_z
-            + (1 + EccentricityEff + HemifieldEff | SUBJECT)
+                + (1 | SUBJECT)
+                + (0 + EccentricityEff | SUBJECT)
+                + (0 + HemifieldEff | SUBJECT)
             , data = dat)
 
 summary(fit.spe)
-Anova(fit.spe, type = 3)
+anova(fit.spe, type = 3)
 
 # ART only model (for supplemental figure)
 fit.art <- lmer(Mean ~ HemifieldEff * EccentricityEff * ART_z
-            + (1 + EccentricityEff + HemifieldEff | SUBJECT)
+                + (1 | SUBJECT)
+                + (0 + EccentricityEff | SUBJECT)
+                + (0 + HemifieldEff | SUBJECT)
             , data = dat)
 summary(fit.art)
-Anova(fit.art, type = 3)
+anova(fit.art, type = 3)
 
 # if you remove the ART outlier who is at +5 sd... (not reported, just for exploration)
 # does double the main effect and pushes it much closer to significance (p .45 -> .13) but doesnt change significance
 fit.art2 <- lmer(Mean ~ HemifieldEff * EccentricityEff * ART_z
-                + (1 + EccentricityEff + HemifieldEff | SUBJECT)
+                 + (1 | SUBJECT)
+                 + (0 + EccentricityEff | SUBJECT)
+                 + (0 + HemifieldEff | SUBJECT)
                 , data = dat[dat$SUBJECT != 145, ])
 summary(fit.art2)
-Anova(fit.art2, type = 3)
+anova(fit.art2, type = 3)
 
 # VWM only model (for supplemental figure)
 fit.vwm <- lmer(Mean ~ HemifieldEff * EccentricityEff * VWM_z 
-                + (1 + EccentricityEff + HemifieldEff | SUBJECT)
+                + (1 | SUBJECT)
+                + (0 + EccentricityEff | SUBJECT)
+                + (0 + HemifieldEff | SUBJECT)
                 , data = dat)
 summary(fit.vwm)
-Anova(fit.vwm, type = 3)
+anova(fit.vwm, type = 3)
 
 #### Model plots ####
 
@@ -165,7 +179,7 @@ SPE_cor <- ggplot(av_subThresh, aes(SPE, Mean_threshold)) +
   theme(plot.title = element_text(hjust = 0.5),
         plot.tag = element_text(face = "bold"),
         plot.tag.position = c(0.1,1.1),
-        text = element_text(size=20),
+        text = element_text(size=25),
         plot.margin = unit(c(2,1,0,0), "cm"))
 
 # ART
@@ -180,7 +194,7 @@ ART_cor <- ggplot(av_subThresh, aes(ART, Mean_threshold)) +
   theme(plot.title = element_text(hjust = 0.5),
         plot.tag = element_text(face = "bold"),
         plot.tag.position = c(0.1,1.1),
-        text = element_text(size=20),
+        text = element_text(size=25),
         plot.margin = unit(c(2,1,0,0), "cm"))
 
 # VWM
@@ -195,7 +209,7 @@ VWM_cor <- ggplot(av_subThresh, aes(VWM, Mean_threshold)) +
   theme(plot.title = element_text(hjust = 0.5),
         plot.tag = element_text(face = "bold"),
         plot.tag.position = c(0.1,1.1),
-        text = element_text(size=20),
+        text = element_text(size=25),
         plot.margin = unit(c(2,1,0,0), "cm"))
 
 # combined
@@ -245,7 +259,7 @@ vwm_effplot <- ggplot(vwmEffects, aes(Stair, slope)) +
   theme(#plot.title = element_text(hjust = 0.5),
     plot.tag = element_text(face = "bold"),
     plot.tag.position = c(0.1,1.1),
-    text = element_text(size=20),
+    text = element_text(size=25),
     plot.margin = unit(c(2,1,0,0), "cm"))
 
 ## Spelling
@@ -284,7 +298,7 @@ spe_effplot <- ggplot(speEffects, aes(Stair, slope)) +
   theme(#plot.title = element_text(hjust = 0.5),
     plot.tag = element_text(face = "bold"),
     plot.tag.position = c(0.1,1.1),
-    text = element_text(size=20),
+    text = element_text(size=25),
     plot.margin = unit(c(2,1,0,0), "cm"))
 
 ## ART
@@ -324,11 +338,11 @@ art_effplot <- ggplot(ARTEffects, aes(Stair, slope)) +
   theme(#plot.title = element_text(hjust = 0.5),
     plot.tag = element_text(face = "bold"),
     plot.tag.position = c(0.1,1.1),
-    text = element_text(size=20),
+    text = element_text(size=25),
     plot.margin = unit(c(2,1,0,0), "cm"))
 
 
-## all combined (exported at 1900 x 1100)
+## all combined (exported at 2000 x 1100)
 grid.arrange(SPE_cor, ART_cor, VWM_cor,
              spe_effplot, art_effplot, vwm_effplot,
              nrow = 2)
@@ -337,7 +351,6 @@ grid.arrange(SPE_cor, ART_cor, VWM_cor,
 
 ## Effect plots
 
-summary(fit)
 y_efflimits <- c(-0.075,0.025)
 
 ## VWM
