@@ -84,6 +84,88 @@ all_pdat[all_pdat$Experiment == 'GAB', ] %>%
 grid.arrange(p1, p2, nrow = 1)
 # exported at 1800 x 800
 
+## Bar plots with data points overlayed
+
+alldat %>% 
+  mutate(Stair = case_when(
+    Stair_short == "LPstair" ~ '-6',
+    Stair_short == "LFstair" ~ '-4',
+    Stair_short == "LNstair" ~ '-2',
+    Stair_short == "RNstair" ~ '+2',
+    Stair_short == "RFstair" ~ '+4',
+    Stair_short == "RPstair"~ '+6')) -> alldat
+
+ylimits <- c(0,1)
+bar_alpha <- 0
+point_alpha <- .5
+
+# a plot
+ggplot(data = NULL, aes(fill = Condition)) + # data is null because 2 data objects used (for bar and points)
+  geom_bar(data = all_pdat[all_pdat$Experiment == 'INV', ], # mean data
+           aes(Stair, mean, fill = Condition, color = Condition),
+           size = 1.5,
+           alpha = bar_alpha,
+           stat="identity", position = 'dodge') + # make bar plot
+  scale_fill_manual("Condition", values = c("Inverted" = "#e85656", "Upright" = "#00c1d6")) + # manual color mapping
+  scale_color_manual("Condition", values = c("Inverted" = "#e85656", "Upright" = "#00c1d6")) + # manual color mapping
+  scale_x_discrete(limits=c("-6","-4","-2","+2","+4","+6")) + # manually set order of x axis
+  # add points
+  geom_point(data = alldat[alldat$Experiment == 'INV', ], # raw data
+             aes(Stair, Mean, color = Condition, stroke = 0), alpha = point_alpha, 
+             position=position_jitterdodge(jitter.width = 0.1, dodge.width= .9)) +
+  # error bars (after points for layering)
+  geom_errorbar(data = all_pdat[all_pdat$Experiment == 'INV', ],
+                aes(Stair, mean, ymin = mean - se, ymax = mean + se),
+                position = position_dodge(.9),
+                width=0.2) + 
+  # other aesthetics
+  labs(x = 'Target Eccentricity (degrees)',  # x label
+       y = 'Crowding Threshold (proportion of eccentricity)', # y label
+       title = 'Inverted versus upright letters', # title
+       tag = 'a.') + # tag (the a.)
+  scale_y_continuous(limits = ylimits,expand = expansion(mult = c(0, .1))) + # set y limits (ylimits is an object of 2 values) and make bars touch bottom axis
+  theme_classic() + # blank background and no upper or right line 
+  theme(plot.title = element_text(hjust = 0.5), # center title
+        legend.position=c(.9,.9), # put condition legend into top right of plot
+        plot.tag = element_text(face = "bold"), # bold the "a." tag
+        text = element_text(size=25)) -> p1 # set font and assign to object
+
+# b plot
+ggplot(data = NULL, aes(fill = Condition)) + # data is null because 2 data objects used (for bar and points)
+  geom_bar(data = all_pdat[all_pdat$Experiment == 'GAB', ], # mean data
+           aes(Stair, mean, fill = Condition, color = Condition),
+           size = 1.5,
+           alpha = bar_alpha,
+           stat="identity", position = 'dodge') + # make bar plot
+  scale_fill_manual("Condition", values = c("Gabor" = "#f28149", "Upright" = "#00c1d6")) + # manual color mapping
+  scale_color_manual("Condition", values = c("Gabor" = "#f28149", "Upright" = "#00c1d6")) + # manual color mapping
+  scale_x_discrete(limits=c("-6","-4","-2","+2","+4","+6")) + # manually set order of x axis
+  # add points
+  geom_point(data = alldat[alldat$Experiment == 'GAB', ], # raw data
+             aes(Stair, Mean, color = Condition, stroke = 0), alpha = point_alpha, 
+             position=position_jitterdodge(jitter.width = 0.1, dodge.width= .9)) +
+  # error bars (after points for layering)
+  geom_errorbar(data = all_pdat[all_pdat$Experiment == 'GAB', ],
+                aes(Stair, mean, ymin = mean - se, ymax = mean + se),
+                position = position_dodge(.9),
+                width=0.2) + 
+  # other aesthetics
+  labs(x = 'Target Eccentricity (degrees)',  # x label
+       y = 'Crowding Threshold (proportion of eccentricity)', # y label
+       title = 'Gabor patches versus upright letters', # title
+       tag = 'b.') + # tag (the a.)
+  scale_y_continuous(limits = ylimits,expand = expansion(mult = c(0, .1))) + # set y limits (ylimits is an object of 2 values) and make bars touch bottom axis
+  theme_classic() + # blank background and no upper or right line 
+  theme(plot.title = element_text(hjust = 0.5), # center title
+        legend.position=c(.9,.9), # put condition legend into top right of plot
+        plot.tag = element_text(face = "bold"), # bold the "a." tag
+        text = element_text(size=25)) -> p2 # set font and assign to object 
+
+# exported at 1800 x 800
+grid.arrange(p1, p2, nrow = 1)
+
+
+
 ### Other plots
 
 ## Violin plots

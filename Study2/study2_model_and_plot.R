@@ -54,6 +54,47 @@ ggplot(pdat, aes(Stair_num, mean)) +
         legend.position=c(.9,.9),
         text = element_text(size=20))
 
+# bar + points overlay plot
+dat %>% 
+  mutate(Stair_num = case_when(
+    Stair == 'LPstair' ~ "-6",
+    Stair == 'LFstair' ~ "-4",
+    Stair == 'LNstair' ~ "-2",
+    Stair == 'RNstair' ~ "+2",
+    Stair == 'RFstair' ~ "+4",
+    Stair == 'RPstair' ~ "+6")) -> dat
+
+ylimits <- c(0,1)
+bar_alpha <- 0
+point_alpha <- .5
+
+ggplot(data = NULL) +
+  geom_bar(data = pdat,
+           aes(Stair_num, mean), 
+           stat="identity", fill = "#00c1d6", color = "#00c1d6",
+           size = 1.5,
+           alpha = bar_alpha) +
+  scale_x_discrete(limits=c("-6","-4","-2","+2","+4","+6")) +
+  # points
+  geom_jitter(data = dat, # raw data
+             aes(Stair_num, Mean, stroke = 0),
+             color = "#00c1d6",
+             alpha = point_alpha,
+             width = .2) +
+  # error bar
+  geom_errorbar(data = pdat,
+                position = position_dodge(.9),
+                aes(Stair_num, mean, ymin = mean - se, ymax = mean + se),
+                width=0.2) + 
+  labs(x = 'Target Eccentricity (degrees)', 
+       y = 'Crowding Threshold (proportion of eccentricity)', 
+       title = 'Crowding thesholds for upright letters') +
+  scale_y_continuous(limits = ylimits, expand = expansion(mult = c(0, .1))) +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position=c(.9,.9),
+        text = element_text(size=20))
+
 # bonus plots
 
 # kde plot
